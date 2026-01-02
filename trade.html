@@ -1,1 +1,168 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Saved Trades</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #020617;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    li {
+      background: #020617;
+      padding: 10px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      border-left: 4px solid #2563eb;
+      cursor: pointer;
+    }
+    button {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+	<p style="color:red;font-weight:bold;">TRADES PAGE LOADED</p>
+
+
+<div class="container">
+  <button onclick="location.href='index.html'">← Back</button>
+
+  <h1>Saved Trades</h1>
+  <ul id="tradeList"></ul>
+  
+  <button id="monthlyReviewBtn">Generate Monthly Review</button>
+
+<h3>Monthly Summary</h3>
+<p id="monthlyMessage"></p>
+
+<h4>Strengths</h4>
+<ul id="strengthsList"></ul>
+
+<h4>Weaknesses</h4>
+<ul id="weaknessesList"></ul>
+
+</div>
+
+<script>
+const trades = JSON.parse (localStorage.getItem("trades"))|| [];
+const list = document.getElementById("tradeList");
+
+if (trades.length === 0) {
+  list.innerHTML = "<li>No trades saved yet.</li>";
+}
+
+trades.forEach((trade, index) => {
+  const li = document.createElement("li");
+
+  const text = document.createElement("span");
+  text.textContent =
+    `${trade.date.slice(0,10)} | ${trade.pair} | ${trade.direction} | ${trade.result}`;
+
+  text.onclick = () => {
+    alert(
+      `PAIR: ${trade.pair}\n` +
+      `DIRECTION: ${trade.direction}\n` +
+      `STRATEGY: ${trade.strategy}\n` +
+      `REASON: ${trade.reason}\n` +
+      `RESULT: ${trade.result}\n` +
+      `EMOTION: ${trade.emotion}`
+    );
+  };
+
+  const del = document.createElement("button");
+  del.textContent = "Delete";
+  del.style.marginLeft = "10px";
+
+  del.onclick = () => {
+    if (confirm("Delete this trade?")) {
+      trades.splice(index, 1);
+      localStorage.setItem("trades", JSON.stringify(trades));
+      location.reload();
+    }
+  };
+
+  li.appendChild(text);
+  li.appendChild(del);
+  list.appendChild(li);
+});
+
+document.getElementById("monthlyReviewBtn").onclick = function () {
+  const trades = JSON.parse(localStorage.getItem("trades")) || [];
+
+  if (trades.length === 0) {
+    alert("No trades to analyze yet.");
+    return;
+  }
+
+  let wins = 0;
+  let losses = 0;
+  const strategyCount = {};
+  const emotionCount = {};
+
+  trades.forEach(t => {
+    if (t.result === "Win") wins++;
+    if (t.result === "Loss") losses++;
+
+    if (t.strategy) {
+      strategyCount[t.strategy] = (strategyCount[t.strategy] || 0) + 1;
+    }
+
+    if (t.emotion) {
+      emotionCount[t.emotion] = (emotionCount[t.emotion] || 0) + 1;
+    }
+  });
+
+  // strongest strategy
+  const strongestStrategy = Object.keys(strategyCount)
+    .sort((a, b) => strategyCount[b] - strategyCount[a])[0];
+
+  // most common emotion
+  const commonEmotion = Object.keys(emotionCount)
+    .sort((a, b) => emotionCount[b] - emotionCount[a])[0];
+
+  document.getElementById("monthlyMessage").innerText =
+    losses > wins
+      ? "You are repeating mistakes. Awareness without correction is refusal to grow."
+      : "You are showing consistency. Protect what is working.";
+
+  const strengths = document.getElementById("strengthsList");
+  const weaknesses = document.getElementById("weaknessesList");
+
+  strengths.innerHTML = "";
+  weaknesses.innerHTML = "";
+
+  if (wins > losses) {
+    strengths.innerHTML += `<li>More winning trades than losses</li>`;
+  } else {
+    weaknesses.innerHTML += `<li>Losses outweigh wins</li>`;
+  }
+
+  if (strongestStrategy) {
+    strengths.innerHTML += `<li>Most used strategy: ${strongestStrategy}</li>`;
+  }
+
+  if (commonEmotion) {
+    weaknesses.innerHTML += `<li>Recurring emotion: ${commonEmotion}</li>`;
+  }
+};
+
+</script>
+
+</body>
+</html>
