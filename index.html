@@ -164,7 +164,8 @@
 document.getElementById("tradeForm").addEventListener("submit", function (e) {
   e.preventDefault(); // STOP page refresh
 
- if (
+  const trade = {
+     if (
   !pair.value ||
   !strategy.value ||
   !reason.value
@@ -173,8 +174,6 @@ document.getElementById("tradeForm").addEventListener("submit", function (e) {
   status.style.color = "red";
   return;
 }
-
-  const trade = {
     pair: document.getElementById("pair").value,
     direction: document.getElementById("direction").value,
     strategy: document.getElementById("strategy").value,
