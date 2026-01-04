@@ -164,6 +164,16 @@
 document.getElementById("tradeForm").addEventListener("submit", function (e) {
   e.preventDefault(); // STOP page refresh
 
+ if (
+  !pair.value ||
+  !strategy.value ||
+  !reason.value
+) {
+  status.innerText = "Please fill all required fields.";
+  status.style.color = "red";
+  return;
+}
+
   const trade = {
     pair: document.getElementById("pair").value,
     direction: document.getElementById("direction").value,
