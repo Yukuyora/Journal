@@ -162,24 +162,29 @@
 
   <script>
 document.getElementById("tradeForm").addEventListener("submit", function (e) {
-  e.preventDefault(); // STOP page refresh
+  e.preventDefault(); // stop page refresh
+
+  const pair = document.getElementById("pair").value.trim();
+  const direction = document.getElementById("direction").value;
+  const strategy = document.getElementById("strategy").value.trim();
+  const reason = document.getElementById("reason").value.trim();
+  const result = document.getElementById("result").value;
+  const emotion = document.getElementById("emotion").value.trim();
+
+  // VALIDATION
+  if (pair === "" || strategy === "") {
+    document.getElementById("status").innerText =
+      "Pair and Strategy are required.";
+    return;
+  }
 
   const trade = {
-     if (
-  !pair.value ||
-  !strategy.value ||
-  !reason.value
-) {
-  status.innerText = "Please fill all required fields.";
-  status.style.color = "red";
-  return;
-}
-    pair: document.getElementById("pair").value,
-    direction: document.getElementById("direction").value,
-    strategy: document.getElementById("strategy").value,
-    reason: document.getElementById("reason").value,
-    result: document.getElementById("result").value,
-    emotion: document.getElementById("emotion").value,
+    pair: pair,
+    direction: direction,
+    strategy: strategy,
+    reason: reason,
+    result: result,
+    emotion: emotion,
     date: new Date().toISOString()
   };
 
@@ -188,11 +193,10 @@ document.getElementById("tradeForm").addEventListener("submit", function (e) {
   localStorage.setItem("trades", JSON.stringify(trades));
 
   document.getElementById("status").innerText = "Trade saved successfully.";
-
-  this.reset(); // clear form
+  this.reset();
 });
+</script>
 
-  </script>
 </div>
 
  
